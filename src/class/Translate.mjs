@@ -4,7 +4,7 @@ import MD5 from "crypto-js/md5.js";
 export default class Translate {
 	constructor(options = {}) {
 		this.Name = "Translate";
-		this.Version = "1.0.7";
+		this.Version = "1.0.7-DeepSeek";
 		Console.log(`🟧 ${this.Name} v${this.Version}`);
 		this.Source = "AUTO";
 		this.Target = "ZH";
@@ -171,12 +171,12 @@ export default class Translate {
 	};
 
 	#UAPool = [
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36", // 13.5%
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36", // 6.6%
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0", // 6.4%
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0", // 6.2%
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36", // 5.2%
-		"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.55 Safari/537.36", // 4.8%
+		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36",
+		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36",
+		"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0",
+		"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0",
+		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36",
+		"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.55 Safari/537.36",
 		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36",
 		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36 Edge/17.17134",
 		"Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
@@ -191,6 +191,7 @@ export default class Translate {
 		Microsoft: 99,
 		Azure: 99,
 		DeepL: 49,
+		DeepSeek: 49,
 	};
 
 	async Google(text = [], source = this.Source, target = this.Target) {
@@ -199,24 +200,21 @@ export default class Translate {
 		target = this.#LanguagesCode.Google[target] ?? this.#LanguagesCode.Google[target?.split?.(/[-_]/)?.[0]] ?? target.toLowerCase();
 		const BaseRequest = [
 			{
-				// Google API
 				url: "https://translate.googleapis.com/translate_a/single?client=gtx&dt=t",
 				headers: {
 					Accept: "*/*",
-					"User-Agent": this.#UAPool[Math.floor(Math.random() * this.#UAPool.length)], // 随机UA
+					"User-Agent": this.#UAPool[Math.floor(Math.random() * this.#UAPool.length)],
 					Referer: "https://translate.google.com",
 				},
 			},
 			{
-				// Google Dictionary Chrome extension https://chrome.google.com/webstore/detail/google-dictionary-by-goog/mgijmajocgfcbeboacabfgobmjgjcoja
 				url: "https://clients5.google.com/translate_a/t?client=dict-chrome-ex",
 				headers: {
 					Accept: "*/*",
-					"User-Agent": this.#UAPool[Math.floor(Math.random() * this.#UAPool.length)], // 随机UA
+					"User-Agent": this.#UAPool[Math.floor(Math.random() * this.#UAPool.length)],
 				},
 			},
 			{
-				// Google Translate App
 				url: "https://translate.google.com/translate_a/single?client=it&dt=qca&dt=t&dt=rmt&dt=bd&dt=rms&dt=sos&dt=md&dt=gt&dt=ld&dt=ss&dt=ex&otf=2&dj=1&hl=en&ie=UTF-8&oe=UTF-8",
 				headers: {
 					Accept: "*/*",
@@ -224,7 +222,6 @@ export default class Translate {
 				},
 			},
 			{
-				// Google Translate App
 				url: "https://translate.googleapis.com/translate_a/single?client=gtx&dj=1&source=bubble&dt=t&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&dt=at",
 				headers: {
 					Accept: "*/*",
@@ -232,7 +229,7 @@ export default class Translate {
 				},
 			},
 		];
-		const request = BaseRequest[Math.floor(Math.random() * (BaseRequest.length - 2))]; // 随机Request, 排除最后两项
+		const request = BaseRequest[Math.floor(Math.random() * (BaseRequest.length - 2))];
 		request.url = `${request.url}&sl=${source}&tl=${target}&q=${encodeURIComponent(text.join("\r"))}`;
 		return await fetch(request)
 			.then(response => {
@@ -261,7 +258,6 @@ export default class Translate {
 			default:
 				request.url = `${BaseURL}/language/translate/v2`;
 				request.headers = {
-					//"Authorization": `Bearer ${api?.Token ?? api?.Auth}`,
 					"User-Agent": "DualSubs",
 					"Content-Type": "application/json; charset=utf-8",
 				};
@@ -270,7 +266,6 @@ export default class Translate {
 					source: source,
 					target: target,
 					format: "html",
-					//"key": api?.Key
 				});
 				switch (api?.Mode) {
 					case "Token":
@@ -329,10 +324,6 @@ export default class Translate {
 			"Content-Type": "application/json; charset=UTF-8",
 			Accept: "application/json, text/javascript, */*; q=0.01",
 			"Accept-Language": "zh-hans",
-			//"Authorization": `Bearer ${api?.Auth}`,
-			//"Ocp-Apim-Subscription-Key": api?.Auth,
-			//"Ocp-Apim-Subscription-Region": api?.Region, // chinanorth, chinaeast2
-			//"X-ClientTraceId": uuidv4().toString()
 		};
 		switch (api?.Mode) {
 			case "Token":
@@ -344,9 +335,7 @@ export default class Translate {
 				request.headers["Ocp-Apim-Subscription-Region"] = api?.Region;
 				break;
 		}
-		text = text.map(item => {
-			return { text: item };
-		});
+		text = text.map(item => ({ text: item }));
 		request.body = JSON.stringify(text);
 		return await fetch(request)
 			.then(response => {
@@ -373,14 +362,12 @@ export default class Translate {
 		}
 		request.url = `${BaseURL}/v2/translate`;
 		request.headers = {
-			//"Accept": "*/*",
 			"User-Agent": "DualSubs",
 			"Content-Type": "application/json",
 			Authorization: `DeepL-Auth-Key ${api?.Token ?? api?.Auth}`,
 		};
 		const body = {
 			text: text,
-			//"source_lang": source,
 			target_lang: target,
 			tag_handling: "html",
 		};
@@ -394,12 +381,62 @@ export default class Translate {
 			.catch(error => Promise.reject(error));
 	}
 
+	async DeepSeek(text = [], source = this.Source, target = this.Target, api = this.API) {
+		text = Array.isArray(text) ? text : [text];
+
+		const BaseURL = api?.URL || "https://api.deepseek.com";
+		const Token = api?.Token || api?.Auth || "";
+		const Model = api?.Model || "deepseek-v4-flash";
+		const Prompt = api?.Prompt || "你是专业字幕翻译器。请把输入字幕翻译为简体中文。必须保持行数一致，一行原文对应一行译文。只输出译文，不要解释，不要编号。";
+
+		const request = {
+			url: `${BaseURL.replace(/\/$/, "")}/chat/completions`,
+			method: "POST",
+			headers: {
+				"User-Agent": "DualSubs",
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${Token}`,
+			},
+			body: JSON.stringify({
+				model: Model,
+				messages: [
+					{
+						role: "system",
+						content: Prompt,
+					},
+					{
+						role: "user",
+						content: text.join("\n"),
+					},
+				],
+				temperature: 0.2,
+			}),
+		};
+
+		return await fetch(request)
+			.then(response => {
+				const body = JSON.parse(response.body);
+				const content = body?.choices?.[0]?.message?.content ?? "";
+
+				let result = content
+					.split(/\r?\n/)
+					.map(item => item.trim())
+					.filter(Boolean);
+
+				if (result.length !== text.length) {
+					result = text.map((_, index) => result[index] ?? result.join(" ") ?? `翻译失败, vendor: ${"DeepSeek"}`);
+				}
+
+				return result;
+			})
+			.catch(error => Promise.reject(error));
+	}
+
 	async BaiduFanyi(text = [], source = this.Source, target = this.Target, api = this.API) {
 		text = Array.isArray(text) ? text : [text];
 		source = this.#LanguagesCode.Baidu[source] ?? this.#LanguagesCode.Baidu[source?.split?.(/[-_]/)?.[0]] ?? source.toLowerCase();
 		target = this.#LanguagesCode.Baidu[target] ?? this.#LanguagesCode.Baidu[target?.split?.(/[-_]/)?.[0]] ?? target.toLowerCase();
 		const request = {};
-		// https://fanyi-api.baidu.com/doc/24
 		const BaseURL = "https://fanyi-api.baidu.com";
 		request.url = `${BaseURL}/api/trans/vip/language`;
 		request.headers = {
@@ -418,11 +455,9 @@ export default class Translate {
 
 	async YoudaoAI(text = [], source = this.Source, target = this.Target, api = this.API) {
 		text = Array.isArray(text) ? text : [text];
-		source = this.#LanguagesCode.Youdao[source] ?? this.#LanguagesCode.Youdao[source?.split?.(/[-_]/)?.[0]];
-		target = this.#LanguagesCode.Youdao[target] ?? this.#LanguagesCode.Youdao[target?.split?.(/[-_]/)?.[0]];
+		source = this.#LanguagesCode.Youdao?.[source] ?? this.#LanguagesCode.Youdao?.[source?.split?.(/[-_]/)?.[0]];
+		target = this.#LanguagesCode.Youdao?.[target] ?? this.#LanguagesCode.Youdao?.[target?.split?.(/[-_]/)?.[0]];
 		const request = {};
-		// https://ai.youdao.com/docs
-		// https://ai.youdao.com/DOCSIRMA/html/自然语言翻译/API文档/文本翻译服务/文本翻译服务-API文档.html
 		const BaseURL = "https://openapi.youdao.com";
 		request.url = `${BaseURL}/api`;
 		request.headers = {
@@ -442,7 +477,7 @@ export default class Translate {
 		return await fetch(request)
 			.then(response => {
 				const body = JSON.parse(response.body);
-				return body?.data ?? `翻译失败, vendor: ${"DeepL"}`;
+				return body?.data ?? `翻译失败, vendor: ${"YoudaoAI"}`;
 			})
 			.catch(error => Promise.reject(error));
 	}
